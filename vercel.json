@@ -1,0 +1,38 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "root": ".",
+      "framework": "vite"
+    },
+    "analytics-python": {
+      "root": "services/analytics-python"
+    },
+    "realtime-go": {
+      "root": "services/realtime-go"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/analytics-python(/.*)?",
+      "destination": {
+        "type": "service",
+        "service": "analytics-python"
+      }
+    },
+    {
+      "source": "/api/realtime-go(/.*)?",
+      "destination": {
+        "type": "service",
+        "service": "realtime-go"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "frontend"
+      }
+    }
+  ]
+}

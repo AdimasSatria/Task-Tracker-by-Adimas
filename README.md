@@ -119,6 +119,16 @@ docker-compose up --build -d
 
 ---
 
+### ▲ Vercel Multi-Services Deployment
+
+This project includes a pre-configured `vercel.json` supporting Vercel's multi-service architecture (Vite frontend + Python analytics + Go realtime WebSocket):
+
+```bash
+vercel deploy
+```
+
+---
+
 ### Manual Multi-Service Setup
 
 ### 1. Database Setup (MySQL 8.0+)
