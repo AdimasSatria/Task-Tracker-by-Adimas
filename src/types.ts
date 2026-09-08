@@ -43,7 +43,7 @@ export interface ActivityEvent {
   action: 'CREATED' | 'STATUS_CHANGED' | 'SYNCED' | 'METRIC' | 'DELETED';
   text: string;
   timestamp: string;
-  service: 'realtime-go' | 'core-api-php' | 'core-api-java' | 'analytics-python';
+  service?: string;
 }
 
 export interface AnalyticsReport {

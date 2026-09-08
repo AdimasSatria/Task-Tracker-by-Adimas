@@ -84,6 +84,12 @@ export interface TranslationDict {
   manageCategories: string;
   addCustomCategory: string;
   customBadge: string;
+  exportData: string;
+  importData: string;
+  importSuccess: string;
+  importError: string;
+  localHostBadge: string;
+  localHostDesc: string;
   categories: Record<string, { label: string; example: string }>;
 }
 
@@ -172,6 +178,12 @@ export const translations: Record<Language, TranslationDict> = {
     manageCategories: 'Kelola Kategori',
     addCustomCategory: '+ Kategori Kustom Baru',
     customBadge: 'Kustom',
+    exportData: 'Backup / Ekspor Data JSON',
+    importData: 'Pulihkan / Impor JSON',
+    importSuccess: 'Data tugas & kategori berhasil dipulihkan!',
+    importError: 'Format file backup tidak valid. Pastikan file berformat .json',
+    localHostBadge: 'Offline-First & Penyimpanan Lokal',
+    localHostDesc: 'Data tersimpan langsung di browser Anda. Privasi 100% terjaga dan bisa digunakan kapan saja tanpa internet.',
     categories: {
       TUGAS_KULIAH: { label: 'Tugas Kuliah', example: 'PR mingguan, esai, resume materi' },
       PRAKTIKUM: { label: 'Praktikum & Lab', example: 'Laporan modul, responsi, pre-test lab' },
@@ -267,6 +279,12 @@ export const translations: Record<Language, TranslationDict> = {
     manageCategories: 'Manage Categories',
     addCustomCategory: '+ New Custom Category',
     customBadge: 'Custom',
+    exportData: 'Backup / Export JSON',
+    importData: 'Restore / Import JSON',
+    importSuccess: 'Tasks and custom categories restored successfully!',
+    importError: 'Invalid backup file format. Please upload a valid .json file',
+    localHostBadge: 'Offline-First & Local Storage',
+    localHostDesc: 'Data is stored privately in your browser storage. Zero latency, full privacy, and works offline.',
     categories: {
       TUGAS_KULIAH: { label: 'Coursework', example: 'Weekly assignments, papers, article summaries' },
       PRAKTIKUM: { label: 'Lab & Practicum', example: 'Lab reports, pre-tests, experiment notes' },

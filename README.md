@@ -119,13 +119,17 @@ docker-compose up --build -d
 
 ---
 
-### ▲ Vercel Multi-Services Deployment
+### ▲ Vercel Deployment (Production Web App)
 
-This project includes a pre-configured `vercel.json` supporting Vercel's multi-service architecture (Vite frontend + Python analytics + Go realtime WebSocket):
+The web frontend is fully configured with `vercel.json` for seamless, zero-config deployment on Vercel:
 
 ```bash
 vercel deploy
 ```
+
+- **Architecture**: Vite Single Page Application (SPA) with client-side routing rewrites (`/(.*) -> /index.html`).
+- **Data Persistence**: Offline-First with real-time browser storage (`localStorage`), auto-save, and JSON Backup & Restore (Export/Import). Zero database latency and 100% privacy.
+- **Note on Backends**: Vercel is designed for frontend & serverless. To run the full multi-service stack (MySQL, Go WebSocket, Python FastAPI, PHP Core API), use Docker Compose below on your local machine or a VPS/Container host (e.g. Railway, Render, Fly.io, Cloud Run).
 
 ---
 

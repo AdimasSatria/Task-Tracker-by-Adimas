@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   CheckCircle2, 
   Circle, 
@@ -24,7 +24,10 @@ import {
   Flame,
   CheckCheck,
   FolderPlus,
-  MapPin
+  MapPin,
+  Download,
+  Upload,
+  ShieldCheck
 } from 'lucide-react';
 import { Task, TaskPriority, TaskStatus, TaskCategory, ActivityEvent, Language, CategoryItem } from './types';
 import { DEFAULT_CATEGORIES, getCategoryDisplayInfo } from './categories';
@@ -35,120 +38,6 @@ import { translations } from './translations';
 const STORAGE_KEY = 'ptt_personal_student_tasks';
 const CUSTOM_CATEGORIES_KEY = 'ptt_custom_categories_v1';
 const LANG_KEY = 'ptt_language';
-
-const SAMPLE_COLLEGE_TASKS_ID: Task[] = [
-  {
-    id: 1,
-    uuid: 'task-sample-1',
-    title: 'Laporan Praktikum Modul 4: Basis Data',
-    courseName: 'Basis Data',
-    description: 'Menyusun normalisasi 3NF, query join multi-tabel, dan screenshot hasil eksekusi.',
-    notes: 'Kumpul di e-Learning Kampus (Folder Praktikum Modul 4 format .PDF)',
-    status: 'IN_PROGRESS',
-    priority: 'URGENT',
-    category: 'PRAKTIKUM',
-    estimatedMinutes: 90,
-    dueDate: '2026-09-10T23:59',
-    createdAt: new Date(Date.now() - 7200000).toISOString()
-  },
-  {
-    id: 2,
-    uuid: 'task-sample-2',
-    title: 'Makalah Kelompok & Slide Presentasi Etika TI',
-    courseName: 'Etika Profesi IT',
-    description: 'Analisis studi kasus perlindungan data pribadi dan siapkan 10 slide presentasi.',
-    notes: 'Presentasi tatap muka di Gedung F Lantai 2 (Ruang Seminar 204)',
-    status: 'TODO',
-    priority: 'HIGH',
-    category: 'KELOMPOK',
-    estimatedMinutes: 120,
-    dueDate: '2026-09-12T15:00',
-    createdAt: new Date(Date.now() - 14400000).toISOString()
-  },
-  {
-    id: 3,
-    uuid: 'task-sample-3',
-    title: 'Latihan Soal & Review Materi UTS Kalkulus II',
-    courseName: 'Kalkulus II',
-    description: 'Mengerjakan bank soal bab integral parsial dan substitusi trigonometri.',
-    notes: 'Pelaksanaan ujian di Gedung Kuliah Bersama R.304',
-    status: 'TODO',
-    priority: 'MEDIUM',
-    category: 'UJIAN',
-    estimatedMinutes: 60,
-    dueDate: '2026-09-15T09:00',
-    createdAt: new Date(Date.now() - 28800000).toISOString()
-  },
-  {
-    id: 4,
-    uuid: 'task-sample-4',
-    title: 'Beli Buku Catatan & Pembayaran Tagihan Kos',
-    description: 'Daftar kebutuhan bulanan dan simpan struk transfer pembayaran.',
-    notes: 'Transfer via M-Banking / Loket Pembayaran Kampus',
-    status: 'COMPLETED',
-    priority: 'LOW',
-    category: 'GENERAL',
-    estimatedMinutes: 30,
-    createdAt: new Date(Date.now() - 43200000).toISOString()
-  }
-];
-
-const SAMPLE_COLLEGE_TASKS_EN: Task[] = [
-  {
-    id: 1,
-    uuid: 'task-sample-1',
-    title: 'Database Lab Report (Module 4)',
-    courseName: 'Databases',
-    description: 'Construct 3NF schemas, multi-table join queries, and attach execution console output.',
-    notes: 'Submit on Campus LMS (Module 4 Assignment Dropbox in PDF)',
-    status: 'IN_PROGRESS',
-    priority: 'URGENT',
-    category: 'PRAKTIKUM',
-    estimatedMinutes: 90,
-    dueDate: '2026-09-10T23:59',
-    createdAt: new Date(Date.now() - 7200000).toISOString()
-  },
-  {
-    id: 2,
-    uuid: 'task-sample-2',
-    title: 'Group Paper & Presentation Deck: IT Ethics',
-    courseName: 'IT Ethics',
-    description: 'Analyze data privacy regulations and prepare 10 slides for team presentation.',
-    notes: 'Live presentation at Building F Room 204',
-    status: 'TODO',
-    priority: 'HIGH',
-    category: 'KELOMPOK',
-    estimatedMinutes: 120,
-    dueDate: '2026-09-12T15:00',
-    createdAt: new Date(Date.now() - 14400000).toISOString()
-  },
-  {
-    id: 3,
-    uuid: 'task-sample-3',
-    title: 'Calculus II Midterm Review & Problem Set',
-    courseName: 'Calculus II',
-    description: 'Practice integral by parts and trigonometric substitutions questions.',
-    notes: 'Exam venue: Central Lecture Hall Room 304',
-    status: 'TODO',
-    priority: 'MEDIUM',
-    category: 'UJIAN',
-    estimatedMinutes: 60,
-    dueDate: '2026-09-15T09:00',
-    createdAt: new Date(Date.now() - 28800000).toISOString()
-  },
-  {
-    id: 4,
-    uuid: 'task-sample-4',
-    title: 'Restock Notebooks & Monthly Rent Payment',
-    description: 'Prepare monthly supplies list and file wire transfer confirmation.',
-    notes: 'Online Banking Transfer / Campus Cashier',
-    status: 'COMPLETED',
-    priority: 'LOW',
-    category: 'GENERAL',
-    estimatedMinutes: 30,
-    createdAt: new Date(Date.now() - 43200000).toISOString()
-  }
-];
 
 export default function App() {
   // Ensure dark mode is strictly enforced
@@ -164,13 +53,17 @@ export default function App() {
 
   const t = translations[language];
 
-  // 2. Personal tasks storage
+  // 2. Personal tasks storage - Starts completely empty, ready to be filled
   const [tasks, setTasks] = useState<Task[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          // Exclude any previous sample items so the web is strictly empty
+          const userOnly = parsed.filter((t: Task) => !t.uuid?.startsWith('task-sample-'));
+          return userOnly;
+        }
       }
     } catch {
       // ignore
@@ -203,6 +96,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Active view for mobile navigation highlight
   const [mobileTab, setMobileTab] = useState<'tasks' | 'stats' | 'categories'>('tasks');
@@ -215,9 +109,9 @@ export default function App() {
     {
       id: 'init-1',
       action: 'SYNCED',
-      text: language === 'id' ? 'Sistem penyimpanan aktif & siap digunakan' : 'Storage system active & ready',
+      text: language === 'id' ? 'Penyimpanan lokal browser aktif & siap digunakan' : 'Browser local storage engine active & ready',
       timestamp: language === 'id' ? 'Baru saja' : 'Just now',
-      service: 'core-api-php'
+      service: 'local-storage'
     }
   ]);
 
@@ -434,27 +328,80 @@ export default function App() {
     ]);
   };
 
-  const handleLoadSamples = () => {
-    const samples = language === 'id' ? SAMPLE_COLLEGE_TASKS_ID : SAMPLE_COLLEGE_TASKS_EN;
-    setTasks(samples);
+  const handleClearAll = () => {
+    if (window.confirm(t.clearConfirm)) {
+      setTasks([]);
+    }
+  };
+
+  const handleExportData = () => {
+    const backupData = {
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      tasks,
+      customCategories
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ruang-tugas-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
     setActivities(acts => [
       {
         id: String(Date.now()),
         action: 'SYNCED',
-        text: language === 'id' 
-          ? 'Contoh tugas kuliah dimuat'
-          : 'Sample course tasks loaded',
+        text: language === 'id' ? 'Data cadangan (.json) berhasil diunduh' : 'Backup file (.json) downloaded',
         timestamp: language === 'id' ? 'Baru saja' : 'Just now',
-        service: 'core-api-php'
+        service: 'local-storage'
       },
       ...acts.slice(0, 4)
     ]);
   };
 
-  const handleClearAll = () => {
-    if (window.confirm(t.clearConfirm)) {
-      setTasks([]);
-    }
+  const handleImportData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const parsed = JSON.parse(content);
+
+        if (Array.isArray(parsed)) {
+          setTasks(parsed);
+          alert(t.importSuccess);
+        } else if (parsed && Array.isArray(parsed.tasks)) {
+          setTasks(parsed.tasks);
+          if (Array.isArray(parsed.customCategories)) {
+            setCustomCategories(parsed.customCategories);
+          }
+          alert(t.importSuccess);
+        } else {
+          alert(t.importError);
+        }
+
+        setActivities(acts => [
+          {
+            id: String(Date.now()),
+            action: 'SYNCED',
+            text: language === 'id' ? 'Data cadangan berhasil dipulihkan' : 'Backup restored successfully',
+            timestamp: language === 'id' ? 'Baru saja' : 'Just now',
+            service: 'local-storage'
+          },
+          ...acts.slice(0, 4)
+        ]);
+      } catch (err) {
+        alert(t.importError);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   const toggleLanguage = () => {
@@ -696,8 +643,9 @@ export default function App() {
                   <h3 className="text-sm sm:text-base font-bold tracking-tight text-white">{t.activityLogTitle}</h3>
                   <p className="text-[11px] font-semibold text-stone-400">{t.activityLogSubtitle}</p>
                 </div>
-                <span className="text-[10px] font-bold text-orange-400 bg-orange-500/15 px-2 py-0.5 rounded-full border border-orange-500/30">
-                  Live
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3" />
+                  <span>Offline Ready</span>
                 </span>
               </div>
 
@@ -720,20 +668,48 @@ export default function App() {
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="pt-3.5 border-t border-white/10 flex items-center gap-2">
+            {/* Action buttons with Backup & Restore */}
+            <div className="pt-3.5 border-t border-white/10 space-y-2">
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleImportData} 
+                accept=".json" 
+                className="hidden" 
+              />
+              
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={handleExportData}
+                  className="min-h-[38px] py-1.5 px-2.5 rounded-2xl text-[11px] font-bold flex items-center justify-center gap-1.5 border transition-all bg-stone-900/80 hover:bg-stone-800 text-stone-200 border-orange-500/20 hover:border-orange-500/40"
+                  title={t.exportData}
+                >
+                  <Download className="w-3.5 h-3.5 text-orange-400" />
+                  <span className="truncate">{language === 'id' ? 'Ekspor JSON' : 'Export JSON'}</span>
+                </button>
+
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="min-h-[38px] py-1.5 px-2.5 rounded-2xl text-[11px] font-bold flex items-center justify-center gap-1.5 border transition-all bg-stone-900/80 hover:bg-stone-800 text-stone-200 border-orange-500/20 hover:border-orange-500/40"
+                  title={t.importData}
+                >
+                  <Upload className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="truncate">{language === 'id' ? 'Impor JSON' : 'Import JSON'}</span>
+                </button>
+              </div>
+
               {tasks.length === 0 ? (
                 <button
-                  onClick={handleLoadSamples}
-                  className="w-full min-h-[42px] py-2 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all bg-stone-900/80 hover:bg-stone-800 text-stone-200 border-orange-500/20"
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-full min-h-[38px] py-1.5 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all bg-stone-900/80 hover:bg-stone-800 text-orange-400 border-orange-500/30"
                 >
-                  <BookOpen className="w-3.5 h-3.5 text-orange-400" />
-                  <span>{t.loadSamples}</span>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{t.addTask}</span>
                 </button>
               ) : (
                 <button
                   onClick={handleClearAll}
-                  className="w-full min-h-[42px] py-2 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all bg-stone-900/80 hover:bg-rose-950/40 hover:text-rose-400 text-stone-400 border-orange-500/20"
+                  className="w-full min-h-[38px] py-1.5 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all bg-stone-900/80 hover:bg-rose-950/40 hover:text-rose-400 text-stone-400 border-orange-500/20"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>{t.clearAll}</span>
@@ -874,18 +850,13 @@ export default function App() {
                     {tasks.length === 0 ? t.emptyDescClean : t.emptyDescNoMatch}
                   </p>
                   {tasks.length === 0 && (
-                    <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3 mt-4">
+                    <div className="flex justify-center mt-4">
                       <button
                         onClick={() => setIsModalOpen(true)}
-                        className="min-h-[42px] px-5 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/30 transition-transform active:scale-98"
+                        className="min-h-[42px] px-5 py-2.5 rounded-full text-xs font-bold bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/30 transition-transform active:scale-98 flex items-center gap-2"
                       >
-                        {t.addFirstTask}
-                      </button>
-                      <button
-                        onClick={handleLoadSamples}
-                        className="min-h-[42px] px-4 py-2 rounded-full text-xs font-bold border bg-stone-800 text-stone-300 border-white/10 hover:bg-stone-700"
-                      >
-                        {t.loadSampleBtn}
+                        <Plus className="w-4 h-4" />
+                        <span>{t.addFirstTask}</span>
                       </button>
                     </div>
                   )}
