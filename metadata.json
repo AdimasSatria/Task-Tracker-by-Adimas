@@ -1,0 +1,6 @@
+{
+  "name": "Ruang Tugas",
+  "description": "Aplikasi manajemen tugas kuliah, praktikum, target belajar, dan kategori kustom dengan visual dark mode bernuansa hangat dan penyimpanan otomatis secara real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

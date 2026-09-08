@@ -1,0 +1,17 @@
+{
+  "name": "premium-task-tracker/core-api-php",
+  "description": "Core CRUD & Authentication Microservice for Premium Task Tracker",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Alexandre Chen",
+      "email": "alex.chen@premiumtask.io"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "ext-pdo": "*",
+    "ext-json": "*"
+  }
+}

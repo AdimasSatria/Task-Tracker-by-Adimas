@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Task Tracker — Apple & One UI Design</title>
+  <meta name="description" content="Personal task tracker for university coursework, exam deadlines, and daily productivity.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Atmospheric Glows -->
+  <div class="bg-ambient">
+    <div class="aurora-orb-1"></div>
+    <div class="aurora-orb-2"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Top Glassmorphic Navigation -->
+    <header class="top-nav">
+      <div class="brand-wrapper">
+        <div class="brand-icon"></div>
+        <div>
+          <span class="brand-title">Task Tracker</span>
+          <span class="brand-badge">PRO v2.4</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Live WebSocket Status Pill -->
+        <div class="ws-live-status" id="wsStatusPill" title="Go WebSocket Hub 60fps Channel">
+          <span class="pulse-dot"></span>
+          <span id="wsStatusText">Go Realtime: Connected</span>
+        </div>
+
+        <!-- Theme Switcher Button -->
+        <button class="btn-pill btn-secondary btn-icon" id="themeToggleBtn" aria-label="Toggle Theme">
+          <span id="themeIcon">☀️</span>
+        </button>
+
+        <!-- New Task CTA Button (Titanium Blue Accent) -->
+        <button class="btn-pill btn-primary" id="openCreateModalBtn">
+          <span>+ Create Task</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Bento Grid Dashboard -->
+    <main class="bento-grid">
+      <!-- Bento Card 1: Today's Focus & Productivity Velocity Gauge (Col 8) -->
+      <section class="bento-card col-span-8">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Daily Velocity & Focus Engine</h2>
+            <p class="card-subtitle">Calculated real-time by Python FastAPI Analytics Microservice</p>
+          </div>
+          <span class="badge-tag priority-urgent" id="burnoutRiskBadge">Low Burnout Risk</span>
+        </div>
+
+        <div class="velocity-hero">
+          <div class="velocity-stats-block">
+            <div class="metric-huge" id="velocityScore">87.5%</div>
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+              <span class="metric-trend">↑ +18.4% velocity vs last week</span>
+              <span style="font-size: 0.82rem; color: var(--text-muted);">Optimal flow window: 09:30 - 12:00</span>
+            </div>
+            <!-- Tech Stack Tags -->
+            <div class="tech-pills-row">
+              <span class="tech-badge">⚡ Go WebSocket</span>
+              <span class="tech-badge">🐍 Python FastAPI</span>
+              <span class="tech-badge">🐘 PHP PDO / Java Spring</span>
+              <span class="tech-badge">🐬 MySQL 8.0</span>
+            </div>
+          </div>
+
+          <!-- Circular SVG Radial Gauge -->
+          <div class="gauge-container">
+            <svg class="gauge-svg" viewBox="0 0 100 100">
+              <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="gauge-progress" id="gaugeCircle" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="gauge-text" id="gaugePercentage">88%</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bento Card 2: Real-Time Stream Log (Col 4) -->
+      <section class="bento-card col-span-4">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Real-Time Hub</h2>
+            <p class="card-subtitle">Golang WebSocket Event Log</p>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">&lt; 1ms latency</span>
+        </div>
+
+        <div class="activity-feed" id="activityFeed">
+          <!-- Populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- Bento Card 3: Interactive Tasks Board with Samsung One UI Pills (Col 8) -->
+      <section class="bento-card col-span-8">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Active Task Stream</h2>
+            <p class="card-subtitle">Organized by priority and execution milestones</p>
+          </div>
+          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);" id="taskCounterText">
+            3 Remaining
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="task-controls">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="taskSearchInput" class="search-input" placeholder="Search tasks, categories, tags...">
+          </div>
+
+          <div class="filter-pills">
+            <button class="filter-pill active" data-filter="ALL">All</button>
+            <button class="filter-pill" data-filter="TODO">To Do</button>
+            <button class="filter-pill" data-filter="IN_PROGRESS">In Progress</button>
+            <button class="filter-pill" data-filter="COMPLETED">Completed</button>
+          </div>
+        </div>
+
+        <!-- Task List Container -->
+        <div class="tasks-list" id="tasksListContainer">
+          <!-- Tasks injected via Vanilla JavaScript -->
+        </div>
+      </section>
+
+      <!-- Bento Card 4: Architecture & Analytics Breakdown (Col 4) -->
+      <section class="bento-card col-span-4">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">System Topology</h2>
+            <p class="card-subtitle">Distributed Service Health</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem;">core-api (PHP / Java)</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">REST CRUD, Auth, MySQL Pool</div>
+            </div>
+            <span class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">200 OK</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem;">realtime-go (Golang)</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Goroutine Hub, WebSockets</div>
+            </div>
+            <span class="badge-tag" style="background: rgba(0, 113, 227, 0.15); color: var(--accent-blue);">60 FPS</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem;">analytics-python (FastAPI)</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Velocity math, Burnout index</div>
+            </div>
+            <span class="badge-tag" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">94.6 Flow</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div>
+              <div style="font-weight: 700; font-size: 0.88rem;">database (MySQL 8.0)</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Indexed InnoDB, UTF8mb4</div>
+            </div>
+            <span class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Synced</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Create Task Modal -->
+  <div class="modal-backdrop" id="createTaskModal">
+    <div class="modal-card">
+      <div class="card-header">
+        <h3 class="card-title">Create New Task</h3>
+        <button class="btn-action-icon" id="closeCreateModalBtn" style="font-size: 1.2rem;">✕</button>
+      </div>
+
+      <form id="createTaskForm">
+        <div class="form-group">
+          <label class="form-label" for="taskTitleInput">Judul Tugas / Aktivitas *</label>
+          <input type="text" id="taskTitleInput" class="form-input" placeholder="Contoh: Laporan Modul 4 Basis Data, Makalah Kelompok" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="taskCourseInput">Mata Kuliah / Subjek</label>
+            <input type="text" id="taskCourseInput" class="form-input" placeholder="Contoh: Basis Data, Kalkulus">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="taskCategorySelect">Kategori Kegiatan</label>
+            <select id="taskCategorySelect" class="form-select">
+              <option value="TUGAS_KULIAH">📚 Tugas Kuliah</option>
+              <option value="PRAKTIKUM">🔬 Praktikum & Lab</option>
+              <option value="UJIAN">🎓 Ujian & Kuis (UTS/UAS)</option>
+              <option value="KELOMPOK">👥 Tugas Kelompok</option>
+              <option value="BELAJAR">📖 Belajar Mandiri</option>
+              <option value="ORGANISASI">🏛️ Organisasi / BEM</option>
+              <option value="MAGANG">💼 Magang & Karier</option>
+              <option value="GENERAL">🌟 General / Pribadi</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="taskPrioritySelect">Prioritas</label>
+            <select id="taskPrioritySelect" class="form-select">
+              <option value="URGENT">🔴 Mendesak (Urgent)</option>
+              <option value="HIGH">🟠 Tinggi</option>
+              <option value="MEDIUM" selected>🔵 Sedang</option>
+              <option value="LOW">⚪ Rendah</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="taskDueDateInput">Tenggat Waktu / Deadline</label>
+            <input type="text" id="taskDueDateInput" class="form-input" placeholder="Contoh: Besok 23:59 atau 15 Sep">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn-pill btn-secondary" id="cancelModalBtn">Batal</button>
+          <button type="submit" class="btn-pill btn-primary">Simpan Tugas</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
